@@ -9,9 +9,13 @@ class Regex
         this.followList = [];
     }
 
-    run()
+    run({ debug = false } = {})
     {
-        this.root.build(0, this.followList);
+        this.root.build(0, this.followList, debug);
+        if (debug)
+        {
+            console.log(this);
+        }
     }
 
     has_end_mark(arrPositionList)
@@ -51,9 +55,7 @@ class Regex
         return Object.keys(Q).find((index) => !found.includes(index));
     }
 
-    to_dfa({
-        debug = false,
-    } = {})
+    to_dfa({ debug = false } = {})
     {
         const found = [];
         const Q = {};
@@ -98,7 +100,7 @@ class Regex
                 const position_set = new Set(reunion);
                 const U = [...position_set].sort();
                 
-                if (debug)
+                if (debug && U.length)
                 {
                     console.log("step:", symbol, q, U);
                 }

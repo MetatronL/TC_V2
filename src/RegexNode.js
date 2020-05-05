@@ -5,6 +5,8 @@ class RegexNode
 {
     constructor(regex)
     {
+        this.regex = regex;
+
         this.optional = false;
         this.arrFirst = [];
         this.arrLast = [];
@@ -103,12 +105,12 @@ class RegexNode
         }
         else if (kleene !== null) {
             this.item = "*";
-            this.children.push(new RegexNode(regex.substring(0, disjunction)));
+            this.children.push(new RegexNode(regex.substring(0, kleene)));
         }
     }
 
 
-    build(nPositionIndex, followList)
+    build(nPositionIndex, followList, debug)
     {
         if (validator.is_letter(this.item))
         {
@@ -121,12 +123,17 @@ class RegexNode
                 list: new Set(),
             };
 
+            if (debug)
+            {
+                console.log(this.position, this);
+            }
+
             return nPositionIndex + 1;
         }
 
         for (const child of this.children)
         {
-            nPositionIndex = child.build(nPositionIndex, followList);
+            nPositionIndex = child.build(nPositionIndex, followList, debug);
         }
 
         if (this.item === ".")
@@ -187,6 +194,11 @@ class RegexNode
                     followList[i].list.add(j);
                 }  
             }
+        }
+
+        if (debug)
+        {
+            console.log(this.position, this);
         }
 
         return nPositionIndex;
