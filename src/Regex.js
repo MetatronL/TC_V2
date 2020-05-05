@@ -6,7 +6,7 @@ class Regex
     constructor(strRegularExpression)
     {
         this.root = new RegexNode(strRegularExpression);
-        this.followList = [];
+        this.followList = []; // lista de echivalente
     }
 
     run({ debug = false } = {})

@@ -12,6 +12,7 @@ const Validator = {
         return ".|*)".indexOf(strSymbol) === -1;
     },
 
+    // pentru un index dat spune unde se termina zona curenta (caracterul ")" complementar)
     get_closing_bracket_position: (regex, index) => {
         let count = 1;
         index = index + 1;

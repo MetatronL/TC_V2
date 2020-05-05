@@ -144,6 +144,7 @@ class RegexNode
 
     build(nPositionIndex, followList, debug)
     {
+        // symbol din alphabet
         if (validator.is_letter(this.item))
         {
             this.arrFirst = [nPositionIndex];
@@ -160,56 +161,67 @@ class RegexNode
                 console.log(this.position, this);
             }
 
+            // Daca avem o frunza (alphabet)
+            // tinem minte pozitia (nPositionIndex)
+            // si ii cream o lista goala de tranzitii
+
             return nPositionIndex + 1;
         }
 
+        // construim recursiv sub-arborii nodului curent
         for (const child of this.children)
         {
             nPositionIndex = child.build(nPositionIndex, followList, debug);
         }
 
-        if (this.item === ".")
+        if (this.item === ".") // concatenare
         {
+            // Daca operandul stang (0) este optional (kleene) consideram si nodurile operandu-lui drept (1) ca fiind initiale
             if (this.children[0].optional) 
             {
                 const reunion = [...this.children[0].arrFirst, ...this.children[1].arrFirst];
                 const reunion_set = new Set(reunion);
                 this.arrFirst = [...reunion_set];
             }
-            else
+            else // altfel pastram operandul stang ca nod initial
             {
                 this.arrFirst = [...this.children[0].arrFirst];
             }
 
 
+            // Daca operandul drept (1) este optional (kleene) consideram si nodurile operandu-lui stang (0) ca fiind finale
             if (this.children[1].optional) 
             {
                 const reunion = [...this.children[0].arrLast, ...this.children[1].arrLast];
                 const reunion_set = new Set(reunion);
                 this.arrLast = [...reunion_set];
             }
-            else
+            else // altfel pastram operandul drept ca nod final
             {
                 this.arrLast = [...this.children[1].arrLast];
             }
 
+            // nodul proaspat creat este optional daca ambele noduri sunt optionale
             this.optional = this.children[0].optional && this.children[1].optional;
 
             for (const i of this.children[0].arrLast)
             {
                 for (const j of this.children[1].arrFirst)
                 {
+                    // cream tranzitiile (echivalenta) intre nodurile initiale si cele finale
                     followList[i].list.add(j);
                 }  
             }
         }
         else if (this.item === "|")
         {
+            // Nodurile initiale si finale sunt formate din reuniunea nodurilor copiilor
             const first_reunion = [...this.children[0].arrFirst, ...this.children[1].arrFirst];
             this.arrFirst = [...(new Set(first_reunion))];
             const last_reunion = [...this.children[0].arrLast, ...this.children[1].arrLast];
             this.arrLast = [...(new Set(last_reunion))];
 
+            // Nodul este optional daca oricare este optional
             this.optional = this.children[0].optional || this.children[1].optional;
         }
         else if (this.item === "*")
@@ -219,10 +231,14 @@ class RegexNode
 
             this.optional = true;
 
+            // In cazul kleene, copiem listele nodului copil
+            // Si il marcam ca optional
+
             for (const i of this.children[0].arrLast)
             {
                 for (const j of this.children[0].arrFirst)
                 {
+                    // cream tranzitiile (echivalenta) intre nodurile initiale si cele finale
                     followList[i].list.add(j);
                 }  
             }

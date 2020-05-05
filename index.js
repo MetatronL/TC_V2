@@ -1,8 +1,7 @@
-// import Validator from "./src/Validator.js";
-
 const Validator = require("./src/Validator.js");
 const Regex = require("./src/Regex.js");
 
+// Am scris cateva teste pentru a verifica corectitudinea algoritmului
 
 const runTest = (debug = false) => {
     const tests = [
@@ -138,10 +137,8 @@ const runTest = (debug = false) => {
         generator.run({ debug });
         const dfa = generator.to_dfa({ debug });
 
-        if (debug)
-        {
-            dfa.print();
-        }
+        
+        dfa.print();
 
         for(const input of test.inputs)
         {
