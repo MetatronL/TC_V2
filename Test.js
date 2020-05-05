@@ -1,6 +1,8 @@
 
 // import Regex from "./src/Regex.js";
 
+const etc = {};
+export default etc;
 // Am scris cateva teste pentru a verifica corectitudinea algoritmului
 
 
@@ -132,24 +134,15 @@ class test
         ];
 
 
-// aici
-// sunt folosite clasele
-
         tests.forEach((test) => {
             console.log("regex:", test.regex);
             console.log("");
-
-            if (element)
-            {
-                element.innerHTML += `regex: ${test.regex}`;
-                element.innerHTML += "</br>";
-                element.innerHTML += "</br>";
-            }
 
             const generator = new Regex(test.regex, debug);
             generator.run({ debug });
             const dfa = generator.to_dfa({ debug });
 
+            
             dfa.print(element);
 
             for(const input of test.inputs)
@@ -160,22 +153,10 @@ class test
                     if (response === input.response)
                     {
                         console.log(`[good] "${input.text}" = ${response}`);
-
-                        if (element)
-                        {
-                            element.innerHTML += `[good] "${input.text}" = ${response}`;
-                            element.innerHTML += "</br>";
-                        }
                     }
                     else
                     {
                         console.log(`[bad] "${input.text}" = ${response} !!!`);
-
-                        if (element)
-                        {
-                            element.innerHTML += `[bad] "${input.text}" = ${response} !!!`;
-                            element.innerHTML += "</br>";
-                        }
                     }
                 }
                 catch (error)
@@ -183,12 +164,6 @@ class test
                     console.log(input.txt);
                     console.error(error);
                 }
-            }
-
-            if (element)
-            {
-                element.innerHTML += "</br>";
-                element.innerHTML += "</br>";
             }
 
             console.log("");
@@ -199,35 +174,18 @@ class test
     __run__() {
         const debug = false;
 
-        setTimeout(() => {
-            let element = null;
-            if (typeof document !== "undefined" && document && window)
+        let element = null;
+        if (typeof document !== "undefined" && document && window)
+        {
+            if(document.querySelector && document.querySelector("._game_output_inner"))
             {
-                if(document.querySelector && document.querySelector("._game_output_inner"))
-                {
-                    element = document.querySelector("._game_output_inner");
-                }
+                element = document.querySelector("._game_output_inner");
             }
-            console.log(element);
-            this.runTest(debug, element);
-        }, 500);
+        }
+
+        runTest(debug, element);
     };
+
 }
 
-const _test = new test();
-_test.__run__();
-
-var run_regex = (regex, word, debug = false) => 
-{
-    const generator = new Regex(regex, debug);
-    generator.run({ debug });
-    const dfa = generator.to_dfa({ debug });
-
-    dfa.print();
-
-    const response = dfa.run(word, debug);
-    console.log(`"${word}" = ${response}`);
-}
-
-
- // export default test;
+// export default test;

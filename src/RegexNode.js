@@ -1,4 +1,4 @@
-const validator = require("./Validator.js");
+// import validator from "./Validator.js";
 
 
 class RegexNode
@@ -253,4 +253,4 @@ class RegexNode
     }
 }
 
-module.exports = RegexNode;
+// export default RegexNode;

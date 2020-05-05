@@ -1,5 +1,5 @@
-const RegexNode = require("./RegexNode.js");
-const DFA = require("./DFA.js");
+// import RegexNode from "./RegexNode.js";
+// import DFA from "./DFA.js";
 
 class Regex
 {
@@ -157,4 +157,4 @@ class Regex
     }
 }
 
-module.exports = Regex;
+// export default Regex;

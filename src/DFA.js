@@ -45,16 +45,32 @@ class DFA
         return true;
     }
 
-    print() // Afisam tranzitiile
+    print(elementHTML = null) // Afisam tranzitiile
     {
         console.log("DFA states and transitions:");
         Object.keys(this.Q).forEach(element => {
             const isFinal = this.finalList.includes(Number.parseInt(element));
             console.log(`${element}:`, this.next[element] || "", isFinal ? "The end.." : "");
+
+            if (element)
+            {
+                console.log(element);
+                if (elementHTML)
+                {
+                    elementHTML.innerHTML = elementHTML.innerHTML +  `${element}: ${this.next[element] ? JSON.stringify(this.next[element]) : ""} ${isFinal ? "The end.." : ""}`; 
+                    elementHTML.innerHTML += "</br>";
+                }
+            }
         });
+
+
+        if (elementHTML)
+        {
+            elementHTML.innerHTML += "</br>";
+        }
 
         console.log("");
     }
 }
 
-module.exports = DFA;
+// export default DFA;

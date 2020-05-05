@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/w3.css" />  
+    </head>
+
+    <style>
+        ._section {
+            display: flex;
+            flex-flow: column;
+            height: 100%;
+        };
+
+        ._header {
+            min-height: 60px;
+        }
+
+        ._main {
+            flex: 1;  /* 1 and it will fill whole space left if no flex value are set to other children*/
+            background: #b9b185;
+            overflow: auto;
+
+            flex-flow: column;
+            display: flex;
+        }
+
+        ._footer {
+            min-height: 60px;
+            background: lightgreen;
+        }
+
+        ._game_output_outer {
+            background: white;
+            height: 410px;
+            flex: 1;
+
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+            width: 95%;
+            max-width: 95%;
+
+            display: inline-flex;
+        }
+        
+
+        ._game_output_inner {
+            overflow-y: scroll;
+            width: 100%;
+
+            /* background: gray; */
+        }
+
+    </style>
+
+    <body>        
+        <div class="_section">
+            <div class=" _header w3-container w3-red w3-center" style="padding:16px 16px">
+                <h1 class="w3-margin w3-xxlarge">Regex to DFA</h1>
+            </div>
+
+            <div class="_main">
+                    
+
+                <div class="_game_output_outer w3-content">
+                    <div class="_game_output_inner w3-container">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="_footer">
+                <p class="w3-xlarge">By Paun Bogdan Gabriel</p>
+            </div>
+        </div>
+
+        <script  src="src/DFA.js"></script>
+        <script  src="src/Validator.js"></script>
+        <script  src="src/RegexNode.js"></script>
+        <script  src="src/Regex.js"></script>
+
+
+        <script  src="index.js"></script>
+
+    </body>
+</html>

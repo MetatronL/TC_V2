@@ -1,4 +1,4 @@
-const Validator = {
+const validator = {
 
     is_operator: (strSymbol) => {
         return "().|*".indexOf(strSymbol) !== -1;
@@ -68,4 +68,4 @@ const Validator = {
     },
 }
 
-module.exports = Validator;
+// export default Validator;
