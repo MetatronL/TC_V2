@@ -31,28 +31,35 @@ const Validator = {
         return index;
     },
 
-    check_brackets: (strRegex) =>
+    check_brackets: (strRegex, debug = false) =>
 	{
 		let count = 0; // tinem minte numarul de paranteze deschise - inchise
 
-		strRegex.split("").forEach((symbol) => {
-			if (symbol === "(")
+        for(const symbol of strRegex)
+        {
+            if (symbol === "(")
 			{
 				count = count + 1;
 			}
 			else if(symbol === ")")
 			{
-				count = count - 1;
-
-				if (count < 0) {
-					console.log("Regex: Inchidere incorecta de paranteze.");
-					return false;
-				}
-			}
-		});
+                count = count - 1;
+                
+                if (count < 0) {
+                    if (debug)
+                    {
+                        console.log("Regex: Inchidere incorecta de paranteze. (count < 0)", strRegex);
+                    }
+                    return false;
+                }
+            }
+        }
 
 		if (count > 0) {
-			console.log("Regex: Inchidere incorecta de paranteze.");
+            if (debug)
+            {
+                console.log("Regex: Inchidere incorecta de paranteze. (count > 0)", strRegex);
+            }
 			return false;
 		}
 

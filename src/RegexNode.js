@@ -3,7 +3,7 @@ const validator = require("./Validator.js");
 
 class RegexNode
 {
-    constructor(regex)
+    constructor(regex, debug = false)
     {
         this.regex = regex;
 
@@ -14,38 +14,50 @@ class RegexNode
         this.position = null;
         this.children = [];
 
-        this.create(regex);
+        this.create(regex, debug);
     }
 
-    trim(regex)
+    trim(regex, debug)
     {
-        if (regex[0] === "(" && regex[regex.length - 1] === ")")
-        {
-            const sub_regex = regex.substring(1, regex.length - 1);
+        let _regex = regex;
 
-            if(validator.check_brackets(sub_regex))
+        while(true)
+        {
+            if (_regex[0] === "(" && _regex[_regex.length - 1] === ")")
             {
-                return this.trim(sub_regex);
+                const sub_regex = _regex.substring(1, _regex.length - 1);
+                if (validator.check_brackets(sub_regex, debug))
+                {
+                    _regex = sub_regex;
+                    continue;
+                }
             }
+
+            break;
         }
 
-        return regex;
+        return _regex;
     }
 
 
-    create(regex)
+    create(regex, debug = false)
     {
         if (regex.length === 1 && validator.is_letter(regex))
         {
             this.item = regex;
             return;
         }
+        if (!validator.check_brackets(regex))
+        {
+            console.log("bad:", regex);
+        }
 
-        regex = this.trim(regex);
+        regex = this.trim(regex, debug);
 
         let conjuction = null;
         let disjunction = null;
         let kleene = null;
+        let paranthesis = null;
 
         const length = regex.length;
         let index = 0;
@@ -55,6 +67,10 @@ class RegexNode
             if (regex[index] === "(")
             {
                 index = validator.get_closing_bracket_position(regex, index);
+                if (paranthesis === null && regex[index - 1] === "(")
+                {
+                    paranthesis = index - 1;
+                }
             }
             else
             {
@@ -102,6 +118,11 @@ class RegexNode
             this.item = ".";
             this.children.push(new RegexNode(regex.substring(0, conjuction)));
             this.children.push(new RegexNode(regex.substring(conjuction)));
+        }
+        else if (paranthesis !== null) {
+            this.item = ".";
+            this.children.push(new RegexNode(regex.substring(0, paranthesis + 1)));
+            this.children.push(new RegexNode(regex.substring(paranthesis)));
         }
         else if (kleene !== null) {
             this.item = "*";

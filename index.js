@@ -60,11 +60,42 @@ const runTest = (debug = false) => {
                     response: true,
                 },
                 {
+                    text: "abccccb",
+                    response: false,
+                },
+                {
                     text: "abd",
                     response: false,
                 },
                 {
                     text: "ab",
+                    response: true,
+                },
+            ],
+        },
+
+
+        {
+            regex: "(x((a|b)(c|d))*)#",
+            inputs: [
+                {
+                    text: "xac",
+                    response: true,
+                },
+                {
+                    text: "xad",
+                    response: true,
+                },
+                {
+                    text: "x",
+                    response: true,
+                },
+                {
+                    text: "xacac",
+                    response: true,
+                },
+                {
+                    text: "xacadbcbd",
                     response: true,
                 },
             ],
@@ -76,7 +107,7 @@ const runTest = (debug = false) => {
         console.log("regex:", test.regex);
         console.log("");
 
-        const generator = new Regex(test.regex);
+        const generator = new Regex(test.regex, debug);
         generator.run({ debug });
         const dfa = generator.to_dfa({ debug });
 
