@@ -1,4 +1,4 @@
-const validator = require("./src/Validator.js");
+const validator = require("./Validator.js");
 
 
 class RegexNode
@@ -15,6 +15,21 @@ class RegexNode
         this.create(regex);
     }
 
+    trim(regex)
+    {
+        if (regex[0] === "(" && regex[regex.length - 1] === ")")
+        {
+            const sub_regex = regex.substring(1, regex.length - 1);
+
+            if(validator.check_brackets(sub_regex))
+            {
+                return this.trim(sub_regex);
+            }
+        }
+
+        return regex;
+    }
+
 
     create(regex)
     {
@@ -23,6 +38,8 @@ class RegexNode
             this.item = regex;
             return;
         }
+
+        regex = this.trim(regex);
 
         let conjuction = null;
         let disjunction = null;
@@ -48,34 +65,43 @@ class RegexNode
 
             if (validator.is_concat(regex[index]))
             {
-                conjuction = conjuction || index;
+                if (conjuction === null)
+                {
+                    conjuction = index;
+                }
                 continue;
             }
             else if (regex[index] === "*")
             {
-                kleene = kleene || index;
+                if (kleene === null)
+                {
+                    kleene = index;
+                }
                 continue;
             }
             else if (regex[index] === "|")
             {
-                disjunction = disjunction || index;
+                if (disjunction === null)
+                {
+                    disjunction = index;
+                }
                 continue; 
 
                 // return ??
             }
         }
 
-        if (disjunction) {
+        if (disjunction !== null) {
             this.item = "|";
             this.children.push(new RegexNode(regex.substring(0, disjunction)));
             this.children.push(new RegexNode(regex.substring(disjunction + 1)));
         }
-        else if (conjuction) {
+        else if (conjuction !== null) {
             this.item = ".";
             this.children.push(new RegexNode(regex.substring(0, conjuction)));
             this.children.push(new RegexNode(regex.substring(conjuction)));
         }
-        else if (kleene) {
+        else if (kleene !== null) {
             this.item = "*";
             this.children.push(new RegexNode(regex.substring(0, disjunction)));
         }
@@ -98,7 +124,7 @@ class RegexNode
             return nPositionIndex + 1;
         }
 
-        for (child of this.children)
+        for (const child of this.children)
         {
             nPositionIndex = child.build(nPositionIndex, followList);
         }
@@ -141,9 +167,9 @@ class RegexNode
         else if (this.item === "|")
         {
             const first_reunion = [...this.children[0].arrFirst, ...this.children[1].arrFirst];
-            this.arrFirst = first_reunion;
+            this.arrFirst = [...(new Set(first_reunion))];
             const last_reunion = [...this.children[0].arrLast, ...this.children[1].arrLast];
-            this.arrLast = last_reunion;
+            this.arrLast = [...(new Set(last_reunion))];
 
             this.optional = this.children[0].optional || this.children[1].optional;
         }
