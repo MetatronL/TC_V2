@@ -7,35 +7,35 @@ class RegexNode
     {
         this.regex = regex;
 
-        this.optional = false;
-        this.arrFirst = [];
-        this.arrLast = [];
-        this.item = null;
-        this.position = null;
-        this.children = [];
+        this.optional = false; // marcheaza nodul ca fiind optional (kleene *)
+        this.arrFirst = []; // nodurile initiale
+        this.arrLast = []; // nodurile finale
+        this.item = null; // symbol-ul (alphabet sau operator)
+        this.position = null; // index-ul nodului (daca symbolul face parte din alphabet)
+        this.children = []; // subarborii nodului curent
 
         this.create(regex, debug);
     }
 
+    // Eleminam parantezele inutile, ex: (((a\b))) => a|b
     trim(regex, debug)
     {
         let _regex = regex;
 
         while(true)
         {
+            // Daca cuvantul este inchis in paranteze, eliminam parantezele si veificam ca noul cuvant sa fie valid
             if (_regex[0] === "(" && _regex[_regex.length - 1] === ")")
             {
                 const sub_regex = _regex.substring(1, _regex.length - 1);
-                if (validator.check_brackets(sub_regex, debug))
+                if (validator.check_brackets(sub_regex, debug)) // ex: "(a|x)(b|y)"" => "a|x)(b|y" este invalid
                 {
                     _regex = sub_regex;
                     continue;
                 }
             }
-
             break;
         }
-
         return _regex;
     }
 
@@ -44,29 +44,38 @@ class RegexNode
     {
         if (regex.length === 1 && validator.is_letter(regex))
         {
+            // Daca nodul este o frunza (symbol din alphabet) tinem minte symbol-ul si ne oprim
             this.item = regex;
             return;
         }
+
+        // verificam corectitudinea parantezelor
         if (!validator.check_brackets(regex))
         {
-            console.log("bad:", regex);
+            console.error("bad:", regex);
         }
 
+        // eleiminam parantezele suplimentare
         regex = this.trim(regex, debug);
 
-        let conjuction = null;
-        let disjunction = null;
-        let kleene = null;
-        let paranthesis = null;
+        let conjuction = null; // marcheaza o operatie de concatenare ex: ab, (b|c)a sau a(b|c)
+        let disjunction = null; // marcheaza o operatie de disjunctie b|c
+        let kleene = null; // zero or more, a* sau (a|b)*
+        let paranthesis = null; // caz-ul parantezelelor (a)(b)
 
         const length = regex.length;
         let index = 0;
 
+        // pentru fiecare symbol din regex
         while(index < length)
         {
+            // daca gasim o zona noua, o vom folosi ca sub-arbore stang, deci o parcurgem la pasul curent
             if (regex[index] === "(")
             {
+                // calculam pozitia unde se termina zona gsita
                 index = validator.get_closing_bracket_position(regex, index);
+
+                // daca avem cazul (a|b)(x|y)
                 if (paranthesis === null && regex[index - 1] === "(")
                 {
                     paranthesis = index - 1;
@@ -74,13 +83,16 @@ class RegexNode
             }
             else
             {
+                // altfel mergem mai departe
+                // nota: primul caracter este omis (operandul stang)
                 ++index;
             }
 
             if (index === length) {
-                break; // the end..
+                break; // the end... to be continued...
             }
 
+            // Daca avem un symbol din alphabet sau "(" (o zona noua) semnalam nevoia de concatenare
             if (validator.is_concat(regex[index]))
             {
                 if (conjuction === null)
@@ -88,7 +100,7 @@ class RegexNode
                     conjuction = index;
                 }
                 continue;
-            }
+            } // operatorul de zero_or_more (kleene)
             else if (regex[index] === "*")
             {
                 if (kleene === null)
@@ -97,18 +109,17 @@ class RegexNode
                 }
                 continue;
             }
-            else if (regex[index] === "|")
+            else if (regex[index] === "|") // disjunctie
             {
                 if (disjunction === null)
                 {
                     disjunction = index;
                 }
                 continue; 
-
-                // return ??
             }
         }
 
+        // Verificam cazurile dupa prioritate: disjunctie, concatenare, kleene
         if (disjunction !== null) {
             this.item = "|";
             this.children.push(new RegexNode(regex.substring(0, disjunction)));
@@ -119,7 +130,7 @@ class RegexNode
             this.children.push(new RegexNode(regex.substring(0, conjuction)));
             this.children.push(new RegexNode(regex.substring(conjuction)));
         }
-        else if (paranthesis !== null) {
+        else if (paranthesis !== null) { // un sub caz la concatenare
             this.item = ".";
             this.children.push(new RegexNode(regex.substring(0, paranthesis + 1)));
             this.children.push(new RegexNode(regex.substring(paranthesis)));
