@@ -11,21 +11,25 @@ class DFA
         this.finalList = finalList;
     }
 
-    run(word)
+    run(word, debug)
     {
-        // check for alphabet
-
         let q = this.q0;
         for(const symbol of word)
         {
             if (typeof this.next[q] === "undefined")
             {
-                console.log("Starea curenta nu are tranzitii.");
+                if (debug)
+                {
+                    console.log("Starea curenta nu are tranzitii.");
+                }
                 return false;
             }
             else if (typeof this.next[q][symbol] === "undefined")
             {
-                console.log(`Starea curenta nu are tranzitii pentru simbolul "${symbol}".`);
+                if (debug)
+                {
+                    console.log(`Starea curenta nu are tranzitii pentru simbolul "${symbol}".`);
+                }
                 return false;
             }
 
@@ -34,7 +38,10 @@ class DFA
 
         if (!this.finalList.includes(q))
         {
-            console.log("Nu a fost atins un nod final.");
+            if (debug)
+            {
+                console.log("Nu a fost atins un nod final.");
+            }
             return false;
         }
 

@@ -100,6 +100,33 @@ const runTest = (debug = false) => {
                 },
             ],
         },
+
+
+        {
+            regex: "(aaa|aab|aac)#",
+            inputs: [
+                {
+                    text: "aaa",
+                    response: true,
+                },
+                {
+                    text: "aab",
+                    response: true,
+                },
+                {
+                    text: "aac",
+                    response: true,
+                },
+                {
+                    text: "aad",
+                    response: false,
+                },
+                {
+                    text: "aaaa",
+                    response: false,
+                },
+            ],
+        },
     ];
 
 
@@ -120,7 +147,7 @@ const runTest = (debug = false) => {
         {
             try
             {
-                const response = dfa.run(input.text, { debug });
+                const response = dfa.run(input.text, debug);
                 if (response === input.response)
                 {
                     console.log(`[good] "${input.text}" = ${response}`);
@@ -138,34 +165,11 @@ const runTest = (debug = false) => {
         }
 
         console.log("");
-        console.log("");
     });
 };
 
 
 const __run__ = () => {
-    //const regex = "(ab|c)#";
-
-    //const regex = "((a|b)(c|d))#";
-    // const regex = "(c(a|b)d)#";
-
-    // console.log(regex);
-
-    // const dfa_maker = new Regex(regex);
-    // dfa_maker.run();
-    // const regex_dfa = dfa_maker.to_dfa();
-
-    // // console.log(dfa_maker);
-    // // console.log(dfa_maker.root.children[0]);
-    // // console.log(dfa_maker.root.children[1]);
-
-    // // console.log(regex_dfa);
-    // regex_dfa.print();
-
-    // console.log(regex_dfa.run("cad"));
-    // console.log(regex_dfa.run("cbd"));
-    // console.log(regex_dfa.run("cabd"));
-
     const debug = false;
     runTest(debug);
 };
